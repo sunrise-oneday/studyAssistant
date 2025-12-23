@@ -3,6 +3,8 @@ package org.example.studyassistant.pojo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Table(name = "courses")
 @Data
@@ -22,4 +24,7 @@ public class Course {
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     private User teacher; // 课程创建者 (关联 User 表)
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    private List<Feedback> feedbacks;
 }
