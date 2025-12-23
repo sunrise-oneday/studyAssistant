@@ -18,4 +18,9 @@ public interface ICourseService {
     ResponseMessage<?> createCourse(Course course, String teacherName);
 
     ResponseMessage<List<Course>> getCoursesByTeacher(String teacherName);
+
+    ResponseMessage<Map<String, Object>> getCourseDetail(Integer courseId);
+
+    @Transactional
+    ResponseMessage<?> replyFeedback(Integer feedbackId, String response);
 }

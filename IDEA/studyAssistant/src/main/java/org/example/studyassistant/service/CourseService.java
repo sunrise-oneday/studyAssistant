@@ -4,18 +4,21 @@ import jakarta.transaction.Transactional;
 import org.example.studyassistant.Impl.ICourseService;
 import org.example.studyassistant.pojo.dto.ResponseMessage;
 import org.example.studyassistant.pojo.entity.Course;
+import org.example.studyassistant.pojo.entity.Feedback;
 import org.example.studyassistant.pojo.entity.StudentCourse;
 import org.example.studyassistant.pojo.entity.User;
 import org.example.studyassistant.repository.CourseRepository;
+import org.example.studyassistant.repository.FeedbackRepository;
 import org.example.studyassistant.repository.StudentCourseRepository;
 import org.example.studyassistant.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@Service
 public class CourseService implements ICourseService {
     @Autowired
     private CourseRepository courseRepository;
@@ -25,6 +28,9 @@ public class CourseService implements ICourseService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FeedbackRepository feedbackRepository;
 
     @Transactional
     @Override
@@ -111,5 +117,46 @@ public class CourseService implements ICourseService {
         return ResponseMessage.success(courses);
     }
 
+    @Override
+    public ResponseMessage<Map<String, Object>> getCourseDetail(Integer courseId) {
+        // 1. 获取课程信息
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) {
+            return new ResponseMessage<>(404, "课程不存在");
+        }
 
+        Map<String, Object> result = new HashMap<>();
+        result.put("course", course);
+
+        // 2. 获取反馈列表 (利用 JPA 的关联查询，或者直接查 FeedbackRepository)
+        result.put("feedbacks", course.getFeedbacks());
+
+        // 3. 获取学生名单和成绩
+        List<StudentCourse> scList = studentCourseRepository.findByCourse(course);
+        List<Map<String, Object>> studentList = new ArrayList<>();
+        for (StudentCourse sc : scList) {
+            Map<String, Object> sMap = new HashMap<>();
+            sMap.put("name", sc.getStudent().getName()); // 学生姓名
+            sMap.put("score", sc.getScore());           // 成绩
+            studentList.add(sMap);
+        }
+        result.put("students", studentList);
+
+        return ResponseMessage.success(result);
+    }
+
+    @Transactional
+    @Override
+    public ResponseMessage<?> replyFeedback(Integer feedbackId, String response) {
+        Feedback feedback = feedbackRepository.findById(feedbackId).orElse(null);
+        if (feedback == null) {
+            return new ResponseMessage<>(404, "反馈不存在");
+        }
+
+        // 更新教师回答
+        feedback.setTeacherResponse(response);
+        feedbackRepository.save(feedback);
+
+        return ResponseMessage.success("回复成功");
+    }
 }
