@@ -159,4 +159,33 @@ public class CourseService implements ICourseService {
 
         return ResponseMessage.success("回复成功");
     }
+
+    // 在 CourseService 类中添加以下方法
+    @Transactional
+    @Override
+    public ResponseMessage<?> updateStudentScore(Integer courseId, String studentName, Double score) {
+        // 查找课程
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) {
+            return new ResponseMessage<>(404, "课程不存在");
+        }
+
+        // 查找学生
+        User student = userRepository.findByName(studentName);
+        if (student == null) {
+            return new ResponseMessage<>(404, "学生不存在");
+        }
+
+        // 查找学生课程关联记录
+        StudentCourse studentCourse = studentCourseRepository.findByStudentAndCourse(student, course);
+        if (studentCourse == null) {
+            return new ResponseMessage<>(404, "该学生未加入此课程");
+        }
+
+        // 更新成绩
+        studentCourse.setScore(score);
+        studentCourseRepository.save(studentCourse);
+
+        return ResponseMessage.success("成绩更新成功");
+    }
 }

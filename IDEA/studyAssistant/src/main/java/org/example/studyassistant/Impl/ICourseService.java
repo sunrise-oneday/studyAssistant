@@ -23,4 +23,8 @@ public interface ICourseService {
 
     @Transactional
     ResponseMessage<?> replyFeedback(Integer feedbackId, String response);
+
+    // 在 CourseService 类中添加以下方法
+    @Transactional
+    ResponseMessage<?> updateStudentScore(Integer courseId, String studentName, Double score);
 }
