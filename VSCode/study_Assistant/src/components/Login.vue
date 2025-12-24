@@ -66,7 +66,7 @@ export default {
           // 根据后端返回的角色进行跳转
           if (res.data.role === 'TEACHER') {
              alert("识别为教师，跳转教师端");
-             // this.$router.push('/teacher/home');
+             this.$router.push('/teacher/home');
           } else {
              alert("识别为学生，跳转学生端");
              this.$router.push('/student/home');
