@@ -329,12 +329,20 @@ export default {
     };
   },
   created() {
+    console.log('🎯 StudentHome组件被创建');
     const localUser = config.user.get();
+    console.log('🔍 从本地存储获取的用户信息:', localUser);
+    
     if (localUser) {
       this.user = localUser;
+      console.log('✅ 用户信息已设置:', this.user);
     } else {
+      console.warn('⚠️ 用户信息不存在，重定向到登录页面');
       this.$router.push('/login');
+      return;
     }
+    
+    console.log('📋 开始获取课程列表...');
     this.fetchCourseList();
   },
   methods: {
