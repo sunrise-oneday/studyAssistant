@@ -25,7 +25,7 @@ public class ResponseMessage<T> {
         return new ResponseMessage(HttpStatus.OK.value(),"success!!",data);
     }
 
-    public static ResponseMessage<User> success() {
+    public static <T> ResponseMessage<T> success() {
         return new ResponseMessage<>(HttpStatus.OK.value(),"success!!",null);
     }
 
