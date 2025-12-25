@@ -1,4 +1,4 @@
-package org.example.studyassistant.AI_Assistant;
+package org.example.studyassistant.service;
 
 import com.alibaba.dashscope.aigc.generation.Generation;
 import com.alibaba.dashscope.aigc.generation.GenerationParam;
@@ -31,14 +31,17 @@ public class AIService {
 
         Generation generation = new Generation();
         GenerationParam param = GenerationParam.builder()
-                .model("qwen-plus")
+                .model("deepseek-v3.2-exp")
                 .messages(messages)
                 .apiKey(apiKey)
                 .build();
         try {
             GenerationResult result = generation.call(param);
             String raw = JsonUtils.toJson(result);
-            String text = result.getOutput() != null ? result.getOutput().getText() : null;
+            String text = result.getOutput() != null && result.getOutput().getChoices() != null
+                    ? result.getOutput().getChoices().get(0).getMessage().getContent()
+                    : null;
+
 
             Map<String, Object> data = new HashMap<>();
             if (text != null && !text.isEmpty()) {
