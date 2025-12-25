@@ -23,4 +23,9 @@ public interface ICourseService {
 
     @Transactional
     ResponseMessage<?> replyFeedback(Integer feedbackId, String response);
+
+    @Transactional
+    ResponseMessage<?> submitFeedback(Integer courseId, String studentName, String difficultyType, String description);
+
+    ResponseMessage<java.util.List<java.util.Map<String, Object>>> getMyFeedbacks(Integer courseId, String studentName);
 }

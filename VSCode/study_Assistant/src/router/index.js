@@ -28,6 +28,12 @@ const router = createRouter({
       name: 'TeacherHome',
       component:()=>import('@/views/TeacherHome.vue')
     }
+    ,
+    {
+      path: '/ai',
+      name: 'AI_Assistant',
+      component: ()=>import('@/views/AI_Assistant.vue')
+    }
   ],
 })
 
