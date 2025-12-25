@@ -13,9 +13,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class UserService implements IUserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -25,15 +29,22 @@ public class UserService implements IUserService {
     private static final long TOKEN_EXPIRE = TimeUnit.HOURS.toMillis(2);
     @Override
     public Map<String, Object> login(UserDTO userDTO){
+        logger.info("🔐 开始处理登录请求，用户名: {}", userDTO.getName());
+        logger.debug("📝 登录请求数据: {}", userDTO);
+        
         User user=userRepository.findByName(userDTO.getName());
         if(user==null){
+            logger.warn("⚠️ 用户不存在: {}", userDTO.getName());
             throw new RuntimeException("用户不存在");
         }
 
+        logger.info("✅ 用户存在，开始验证密码");
         if (!passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
+            logger.warn("❌ 密码验证失败，用户名: {}", userDTO.getName());
             throw new RuntimeException("密码错误");
         }
 
+        logger.info("✅ 密码验证成功，生成Token");
         String token = UUID.randomUUID().toString().replace("-", "");
         TOKEN_STORE.put(token, System.currentTimeMillis() + TOKEN_EXPIRE);
 
@@ -42,6 +53,10 @@ public class UserService implements IUserService {
         result.put("role", user.getRole()); // 从数据库取出的角色
         result.put("name", user.getName());
 
+        logger.info("🎉 登录成功，用户名: {}, 角色: {}, Token长度: {}", 
+                   userDTO.getName(), user.getRole(), token.length());
+        logger.debug("🔑 生成的Token: {}", token);
+        
         return result;
     }
 

@@ -1,9 +1,9 @@
 // src/api/config.js
 
 const config = {
-    // 后端接口基础地址 (Spring Boot 默认端口 8080)
-    // 注意：你的 Controller 路径是 /api/user/login，所以这里 host 设为 /api/
-    host: 'http://localhost:8080/api/', 
+    // 后端接口基础地址 - 使用相对路径，通过Vite代理转发
+    // Vite开发服务器会代理 /api 请求到 http://localhost:8080/api/
+    host: '/api/', 
     
     // 静态资源基础地址 (如果有图片上传等功能会用到)
     hostfile: 'http://localhost:8080/',

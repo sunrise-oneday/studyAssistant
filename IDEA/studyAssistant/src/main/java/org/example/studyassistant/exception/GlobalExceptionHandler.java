@@ -14,10 +14,15 @@ public class GlobalExceptionHandler {
     Logger logger=LoggerFactory.getLogger(GlobalAdvisorAdapterRegistry.class);
         @ExceptionHandler({Exception.class})
     public ResponseMessage handlerException(Exception e, HttpServletRequest request, HttpServletResponse response){
-            logger.error("统一异常处理- Request: {} {}",request.getMethod(), request.getRequestURL(),e);
+            logger.error("❌ 全局异常处理 - 请求: {} {}, 错误信息: {}", request.getMethod(), request.getRequestURL(), e.getMessage(), e);
+            logger.debug("🔍 异常详情:", e);
+            
             if (e instanceof RuntimeException) { // 假设你的业务异常都继承自 RuntimeException
+                logger.warn("⚠️ 业务异常: {}", e.getMessage());
                 return new ResponseMessage<>(400, e.getMessage(), null); // 客户端错误
             }
+            
+            logger.error("💥 系统内部错误: {}", e.getMessage(), e);
             return new ResponseMessage<>(500, "服务器内部错误", null); // 服务器内部错误
         }
 }
