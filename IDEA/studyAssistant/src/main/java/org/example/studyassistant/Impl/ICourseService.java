@@ -28,4 +28,7 @@ public interface ICourseService {
     ResponseMessage<?> submitFeedback(Integer courseId, String studentName, String difficultyType, String description);
 
     ResponseMessage<java.util.List<java.util.Map<String, Object>>> getMyFeedbacks(Integer courseId, String studentName);
+    // 在 CourseService 类中添加以下方法
+    @Transactional
+    ResponseMessage<?> updateStudentScore(Integer courseId, String studentName, Double score);
 }
