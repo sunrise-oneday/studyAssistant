@@ -7,6 +7,7 @@ import org.example.studyassistant.pojo.entity.Course;
 import org.example.studyassistant.pojo.entity.Feedback;
 import org.example.studyassistant.pojo.entity.StudentCourse;
 import org.example.studyassistant.pojo.entity.User;
+import org.example.studyassistant.pojo.enums.DifficultyType;
 import org.example.studyassistant.repository.CourseRepository;
 import org.example.studyassistant.repository.FeedbackRepository;
 import org.example.studyassistant.repository.StudentCourseRepository;
@@ -158,5 +159,54 @@ public class CourseService implements ICourseService {
         feedbackRepository.save(feedback);
 
         return ResponseMessage.success("回复成功");
+    }
+
+    @Transactional
+    @Override
+    public ResponseMessage<?> submitFeedback(Integer courseId, String studentName, String difficultyType, String description) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) {
+            return new ResponseMessage<>(404, "课程不存在");
+        }
+        User student = userRepository.findByName(studentName);
+        if (student == null) {
+            return new ResponseMessage<>(404, "学生不存在");
+        }
+        DifficultyType type;
+        try {
+            type = DifficultyType.valueOf(difficultyType);
+        } catch (Exception e) {
+            return new ResponseMessage<>(400, "难点类型错误");
+        }
+        Feedback fb = new Feedback();
+        fb.setCourse(course);
+        fb.setStudent(student);
+        fb.setDifficultyType(type);
+        fb.setDescription(description);
+        feedbackRepository.save(fb);
+        return ResponseMessage.success("提交成功");
+    }
+
+    @Override
+    public ResponseMessage<List<Map<String, Object>>> getMyFeedbacks(Integer courseId, String studentName) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) {
+            return new ResponseMessage<>(404, "课程不存在");
+        }
+        User student = userRepository.findByName(studentName);
+        if (student == null) {
+            return new ResponseMessage<>(404, "学生不存在");
+        }
+        List<Feedback> list = feedbackRepository.findByCourseAndStudent(course, student);
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Feedback f : list) {
+            Map<String, Object> m = new HashMap<>();
+            m.put("id", f.getId());
+            m.put("difficultyType", f.getDifficultyType().name());
+            m.put("description", f.getDescription());
+            m.put("teacherResponse", f.getTeacherResponse());
+            result.add(m);
+        }
+        return ResponseMessage.success(result);
     }
 }

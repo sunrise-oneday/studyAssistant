@@ -117,9 +117,13 @@
            
            <div class="panel-body flex-row">
              <div class="course-img-placeholder">
-               <!-- 随机/固定图片 -->
                <div class="img-box">
-                 <span>Course Img</span>
+                 <svg class="course-svg" viewBox="0 0 120 90">
+                   <rect x="10" y="12" width="40" height="60" rx="6" fill="#b3d8ff"></rect>
+                   <rect x="50" y="12" width="40" height="60" rx="6" fill="#409eff"></rect>
+                   <line x1="10" y1="36" x2="90" y2="36" stroke="#ffffff" stroke-width="4"></line>
+                   <rect x="25" y="74" width="70" height="8" rx="4" fill="#c0c4cc"></rect>
+                 </svg>
                </div>
              </div>
              <div class="course-info-text">
@@ -151,10 +155,9 @@
                 <label>难点类型</label>
                 <select v-model="feedbackForm.type" class="custom-select">
                   <option value="" disabled>请选择类型</option>
-                  <option value="concept">概念理解</option>
-                  <option value="homework">作业难题</option>
-                  <option value="lab">实验操作</option>
-                  <option value="other">其他</option>
+                  <option value="CONCEPT">概念模糊</option>
+                  <option value="CALCULATION">计算困难</option>
+                  <option value="METHOD">方法不当</option>
                 </select>
               </div>
               <div class="form-group">
@@ -247,7 +250,7 @@
 <script>
 import config from '@/api/config';
 import { logout } from '@/api/sys/auth';
-import { getMyCourses, joinCourse } from '@/api/sys/course';
+import { getMyCourses, joinCourse, getCourseDetail, submitFeedback as apiSubmitFeedback, getMyFeedbacks } from '@/api/sys/course';
 // 引入资源相关的API
 import { getResourceList, getDownloadUrl } from '@/api/sys/resource';
 
@@ -333,19 +336,35 @@ export default {
     },
 
     // 进入课程详情
+    // 1. 先获取课程基本信息
+    // 2. 再获取课程资源列表
+    // 3. 最后获取学生的反馈列表
     async openCourseDetail(course) {
-      this.currentCourse = {
-        ...course,
-        // 模拟额外字段
-        score: Math.floor(Math.random() * 20 + 80), // 80-100 随机分
-        description: '本课程旨在深入讲解相关领域的核概念与实践应用，通过理论学习与动手实验相结合的方式，帮助学生掌握关键技能。'
-      };
-      
-      // 获取资源
+      this.currentCourse = { ...course };
       this.fetchResources(course.id);
-      
-      // 模拟获取反馈列表
-      this.fetchFeedbackList(course.id);
+      try {
+        const res = await getCourseDetail(course.id);
+        if (res.data.code === 200) {
+          const detail = res.data.data || {};
+          const c = detail.course || {};
+          this.currentCourse.description = c.description || '';
+          if (!this.currentCourse.teacherName && c.teacher && c.teacher.name) {
+            this.currentCourse.teacherName = c.teacher.name;
+          }
+          const list = Array.isArray(detail.feedbacks) ? detail.feedbacks : [];
+          this.feedbackList = list
+            .filter(f => f.student && f.student.name === this.user.name)
+            .map(f => ({
+              id: f.id,
+              type: f.difficultyType,
+              time: '',
+              content: f.description,
+              reply: f.teacherResponse || null
+            }));
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
     
     backToDashboard() {
@@ -366,48 +385,49 @@ export default {
       }
     },
     
-    // 模拟获取反馈
-    fetchFeedbackList(courseId) {
-       // 这里暂时使用Mock数据，实际应调用后端API
-       this.feedbackList = [
-         {
-           id: 1,
-           type: 'concept',
-           time: '2023-12-01',
-           content: '老师，关于第三章的递归逻辑不太理解，能不能再讲一下？',
-           reply: '好的，下节课我会重点复习这部分。',
-           hasReply: true
-         },
-         {
-           id: 2,
-           type: 'homework',
-           time: '2023-12-10',
-           content: '作业第二题的数据集在哪里下载？',
-           reply: null,
-           hasReply: false
+    async fetchFeedbackList(courseId) {
+       try {
+         const res = await getMyFeedbacks({ courseId, studentName: this.user.name });
+         if (res.data.code === 200) {
+           const list = Array.isArray(res.data.data) ? res.data.data : [];
+           this.feedbackList = list.map(f => ({
+             id: f.id,
+             type: f.difficultyType,
+             time: '',
+             content: f.description,
+             reply: f.teacherResponse || null
+           }));
          }
-       ];
+       } catch (e) {
+         console.error('获取我的反馈失败', e);
+       }
     },
     
-    submitFeedback() {
+    async submitFeedback() {
       if (!this.feedbackForm.type || !this.feedbackForm.content) {
         alert('请填写完整的反馈信息');
         return;
       }
-      
-      // 模拟提交
-      const newFeedback = {
-        id: Date.now(),
-        type: this.feedbackForm.type,
-        content: this.feedbackForm.content,
-        time: new Date().toISOString().split('T')[0],
-        reply: null
-      };
-      
-      this.feedbackList.unshift(newFeedback);
-      this.feedbackForm.type = '';
-      this.feedbackForm.content = '';
-      alert('反馈已提交');
+      try {
+        const params = {
+          courseId: this.currentCourse.id,
+          studentName: this.user.name,
+          difficultyType: this.feedbackForm.type,
+          description: this.feedbackForm.content
+        };
+        const res = await apiSubmitFeedback(params);
+        if (res.data.code === 200) {
+          await this.fetchFeedbackList(this.currentCourse.id);
+          this.feedbackForm.type = '';
+          this.feedbackForm.content = '';
+          alert('反馈已提交');
+        } else {
+          alert(res.data.message || '提交失败');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('系统错误或网络异常');
+      }
     },
     
     viewReply(item) {
@@ -422,7 +442,10 @@ export default {
         concept: '概念理解',
         homework: '作业难题',
         lab: '实验操作',
-        other: '其他'
+        other: '其他',
+        CONCEPT: '概念模糊',
+        CALCULATION: '计算困难',
+        METHOD: '方法不当'
       };
       return map[type] || '其他';
     },
@@ -756,6 +779,10 @@ export default {
   justify-content: center;
   align-items: center;
   border-radius: 6px;
+}
+.course-svg {
+  width: 100%;
+  height: 100%;
 }
 .course-info-text {
   flex: 1;
