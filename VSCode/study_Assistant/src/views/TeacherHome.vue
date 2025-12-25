@@ -6,7 +6,7 @@
         <div class="logo">AI 校园学习助手 - 教师端</div>
         <div class="nav-items">
           <span class="nav-link active">首页</span>
-          <span class="nav-link">AI 助手</span>
+          <span class="nav-link" @click="$router.push('/ai')">AI 助手</span>
 
           <div class="user-profile">
             <span class="user-name">{{ user.name }}</span>

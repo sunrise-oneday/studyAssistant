@@ -49,30 +49,19 @@ export default {
         const response = await login(this.loginForm);
         const res = response.data;
 
-        if (res.code === 200) {
+        if (res && res.code === 200) {
           this.message = '登录成功！';
-          
-          // res.data 现在包含 { token, role, name }
-          // 这些数据是后端从数据库查出来返回的
-          config.token.set(res.data.token);
-          
-          const userInfo = {
-              name: res.data.name,
-              role: res.data.role
-          };
-          config.user.set(userInfo);
+          const data = res.data || {};
+          const token = data.token || '';
+          const role = data.role || '';
+          const name = data.name || '';
+          config.token.set(token);
+          config.user.set({ name, role });
           config.tokenTime.set(Date.now());
-
-          // 根据后端返回的角色进行跳转
-          if (res.data.role === 'TEACHER') {
-             alert("识别为教师，跳转教师端");
-             this.$router.push('/teacher/home');
-          } else {
-             alert("识别为学生，跳转学生端");
-             this.$router.push('/student/home');
-          }
+          const target = role === 'TEACHER' ? { name: 'TeacherHome' } : { name: 'StudentHome' };
+          await this.$router.push(target);
         } else {
-          this.message = res.message;
+          this.message = (res && res.message) || '登录失败';
         }
       } catch (error) {
         console.error(error);

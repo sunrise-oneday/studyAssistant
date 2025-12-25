@@ -74,8 +74,8 @@ public class CourseController {
         String response = (String) params.get("response");
         return courseService.replyFeedback(feedbackId, response);
     }
-    // 7. 教师打分接口
-    @PostMapping("/grade")
+  
+  @PostMapping("/grade")
     public ResponseMessage<?> gradeStudent(@RequestBody Map<String, Object> params) {
         Integer courseId = (Integer) params.get("courseId");
         String studentName = (String) params.get("studentName");
@@ -84,5 +84,23 @@ public class CourseController {
         Double score = Double.valueOf(scoreObj.toString());
 
         return courseService.updateStudentScore(courseId, studentName, score);
+    }
+  
+// 7. 学生提交反馈
+    @PostMapping("/submit-feedback")
+    public ResponseMessage<?> submitFeedback(@RequestBody Map<String, Object> params) {
+        Integer courseId = (Integer) params.get("courseId");
+        String studentName = (String) params.get("studentName");
+        String difficultyType = (String) params.get("difficultyType");
+        String description = (String) params.get("description");
+        return courseService.submitFeedback(courseId, studentName, difficultyType, description);
+    }
+
+    // 8. 获取学生本人在课程下的反馈列表
+    @PostMapping("/my-feedbacks")
+    public ResponseMessage<List<Map<String, Object>>> getMyFeedbacks(@RequestBody Map<String, Object> params) {
+        Integer courseId = (Integer) params.get("courseId");
+        String studentName = (String) params.get("studentName");
+        return courseService.getMyFeedbacks(courseId, studentName);
     }
 }
