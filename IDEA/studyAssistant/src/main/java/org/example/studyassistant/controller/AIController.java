@@ -1,5 +1,6 @@
-package org.example.studyassistant.AI_Assistant;
+package org.example.studyassistant.controller;
 
+import org.example.studyassistant.service.AIService;
 import org.example.studyassistant.pojo.dto.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
