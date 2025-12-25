@@ -205,7 +205,7 @@
 
             <!-- 右列：资源与成绩 -->
             <div class="right-column">
-              <!-- 模块3: 成绩表 -->
+              <!-- 模块3: 成绩表 (带打分功能) -->
               <div class="score-card card-shadow">
                 <div class="card-header">
                   <h3>班级成员 & 成绩</h3>
@@ -215,7 +215,8 @@
                     <thead>
                       <tr>
                         <th>姓名</th>
-                        <th>成绩</th>
+                        <th style="width: 140px">成绩</th>
+                        <th style="width: 80px">操作</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -225,14 +226,61 @@
                       >
                         <td>{{ stu.name }}</td>
                         <td>
-                          <!-- 假设后端学生对象有 score 字段 -->
-                          <span
-                            :class="
-                              stu.score >= 60 ? 'score-pass' : 'score-fail'
-                            "
+                          <!-- 编辑模式 -->
+                          <div
+                            v-if="editingStudentName === stu.name"
+                            class="score-edit-box"
                           >
-                            {{ stu.score !== null ? stu.score : '-' }}
-                          </span>
+                            <input
+                              type="number"
+                              v-model="tempScore"
+                              class="mini-input score-input"
+                              min="0"
+                              max="100"
+                            />
+                          </div>
+                          <!-- 展示模式 -->
+                          <div v-else>
+                            <span
+                              :class="
+                                stu.score >= 60
+                                  ? 'score-pass'
+                                  : stu.score !== null
+                                    ? 'score-fail'
+                                    : 'score-null'
+                              "
+                            >
+                              {{ stu.score !== null ? stu.score : '未评分' }}
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <!-- 编辑模式下的按钮 -->
+                          <div
+                            v-if="editingStudentName === stu.name"
+                            class="action-btns"
+                          >
+                            <button
+                              class="icon-btn save"
+                              @click="submitScore(stu.name)"
+                              title="保存"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              class="icon-btn cancel"
+                              @click="cancelEdit"
+                              title="取消"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <!-- 展示模式下的按钮 -->
+                          <div v-else>
+                            <button class="text-btn" @click="startEdit(stu)">
+                              {{ stu.score !== null ? '修改' : '打分' }}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                       <tr
@@ -241,7 +289,7 @@
                           courseDetailData.students.length === 0
                         "
                       >
-                        <td colspan="2" style="text-align: center; color: #999">
+                        <td colspan="3" style="text-align: center; color: #999">
                           暂无学生加入
                         </td>
                       </tr>
@@ -328,6 +376,7 @@ import {
   createCourse,
   getCourseDetail,
   replyFeedback,
+  gradeStudent,
 } from '@/api/sys/course';
 
 import {
@@ -372,6 +421,8 @@ export default {
         type: 'PPT',
       },
       selectedFile: null, // 选中的文件
+      editingStudentName: null, // 当前正在编辑的学生名字
+      tempScore: '', // 临时存放输入的成绩
     };
   },
   computed: {
@@ -454,6 +505,8 @@ export default {
       this.currentView = 'dashboard';
       this.currentCourseId = courseId;
       this.courseDetailData = null; // 清空旧数据防止闪烁
+
+      this.cancelEdit(); // 切换课程时，重置打分状态
 
       try {
         // 对应 Controller: getCourseDetail (@PathVariable courseId)
@@ -573,6 +626,47 @@ export default {
     // 9. 下载
     downloadResource(id) {
       window.open(getDownloadUrl(id));
+    },
+
+    startEdit(student) {
+      this.editingStudentName = student.name;
+      this.tempScore = student.score !== null ? student.score : '';
+    },
+
+    // 2. 取消编辑
+    cancelEdit() {
+      this.editingStudentName = null;
+      this.tempScore = '';
+    },
+
+    // 3. 提交成绩
+    async submitScore(studentName) {
+      // 简单校验
+      if (this.tempScore === '' || this.tempScore < 0 || this.tempScore > 100) {
+        return alert('请输入 0-100 之间的有效分数');
+      }
+
+      try {
+        const params = {
+          courseId: this.currentCourseId,
+          studentName: studentName,
+          score: this.tempScore,
+        };
+
+        const res = await gradeStudent(params);
+
+        if (res.data.code === 200) {
+          // alert("打分成功"); // 体验优化：成功后不弹窗，直接刷新
+          this.cancelEdit();
+          // 刷新当前课程详情，以更新列表显示
+          this.selectCourse(this.currentCourseId);
+        } else {
+          alert(res.data.message);
+        }
+      } catch (e) {
+        console.error(e);
+        alert('打分失败');
+      }
     },
 
     // 工具：获取难点类型颜色
@@ -1083,7 +1177,7 @@ export default {
   background: none;
   color: #409eff;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
 }
 .text-btn:hover {
   text-decoration: underline;
@@ -1099,5 +1193,50 @@ export default {
 }
 ::-webkit-scrollbar-track {
   background: transparent;
+}
+.score-null {
+  color: #909399;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.score-edit-box {
+  display: flex;
+  align-items: center;
+}
+.score-input {
+  width: 60px;
+  padding: 4px;
+  text-align: center;
+}
+
+.action-btns {
+  display: flex;
+  gap: 5px;
+}
+.icon-btn {
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+.icon-btn.save {
+  background: #67c23a;
+  color: white;
+}
+.icon-btn.save:hover {
+  background: #85ce61;
+}
+.icon-btn.cancel {
+  background: #f56c6c;
+  color: white;
+}
+.icon-btn.cancel:hover {
+  background: #f78989;
 }
 </style>
