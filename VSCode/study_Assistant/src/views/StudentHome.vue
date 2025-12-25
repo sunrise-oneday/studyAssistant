@@ -5,7 +5,12 @@
       <div class="nav-content">
         <div class="logo">AI 校园学习助手</div>
         <div class="nav-items">
-          <span class="nav-link" :class="{ active: !currentCourse }" @click="backToDashboard">首页</span>
+          <span
+            class="nav-link"
+            :class="{ active: !currentCourse }"
+            @click="backToDashboard"
+            >首页</span
+          >
           <span class="nav-link">AI 助手</span>
 
           <div class="user-profile">
@@ -92,9 +97,7 @@
                 <p class="teacher">讲师: {{ course.teacherName || '未知' }}</p>
 
                 <!-- 修改：查看详情按钮 -->
-                <button class="view-res-btn">
-                  进入课程
-                </button>
+                <button class="view-res-btn">进入课程</button>
               </div>
             </div>
 
@@ -108,34 +111,38 @@
 
       <!-- 视图 2: 课程详情面板 (Course Detail) -->
       <div v-else class="course-detail-view">
-        
         <!-- 面板 1: 课程基本信息 -->
         <div class="detail-panel card-shadow">
-           <button class="back-btn" @click="backToDashboard">
-             ← 返回列表
-           </button>
-           
-           <div class="panel-body flex-row">
-             <div class="course-img-placeholder">
-               <!-- 随机/固定图片 -->
-               <div class="img-box">
-                 <span>Course Img</span>
-               </div>
-             </div>
-             <div class="course-info-text">
-               <h2>{{ currentCourse.courseName }}</h2>
-               <div class="info-row">
-                 <span class="label">授课老师:</span> {{ currentCourse.teacherName || '未知' }}
-               </div>
-               <div class="info-row">
-                 <span class="label">当前成绩:</span> <span class="score">{{ currentCourse.score || '暂无' }}</span>
-               </div>
-               <div class="desc-box">
-                 <p class="label">课程描述:</p>
-                 <p class="desc-content">{{ currentCourse.description || '这是一门非常有趣的课程，涵盖了核心知识点...' }}</p>
-               </div>
-             </div>
-           </div>
+          <button class="back-btn" @click="backToDashboard">← 返回列表</button>
+
+          <div class="panel-body flex-row">
+            <div class="course-img-placeholder">
+              <!-- 随机/固定图片 -->
+              <div class="img-box">
+                <span>Course Img</span>
+              </div>
+            </div>
+            <div class="course-info-text">
+              <h2>{{ currentCourse.courseName }}</h2>
+              <div class="info-row">
+                <span class="label">授课老师:</span>
+                {{ currentCourse.teacherName || '未知' }}
+              </div>
+              <div class="info-row">
+                <span class="label">当前成绩:</span>
+                <span class="score">{{ currentCourse.score || '暂无' }}</span>
+              </div>
+              <div class="desc-box">
+                <p class="label">课程描述:</p>
+                <p class="desc-content">
+                  {{
+                    currentCourse.description ||
+                    '这是一门非常有趣的课程，涵盖了核心知识点...'
+                  }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 面板 2: 难点反馈 -->
@@ -159,41 +166,47 @@
               </div>
               <div class="form-group">
                 <label>描述</label>
-                <textarea 
-                  v-model="feedbackForm.content" 
-                  class="custom-textarea" 
+                <textarea
+                  v-model="feedbackForm.content"
+                  class="custom-textarea"
                   rows="4"
                   placeholder="请详细描述你遇到的困难..."
                 ></textarea>
               </div>
-              <button class="primary-btn" @click="submitFeedback">发布反馈</button>
+              <button class="primary-btn" @click="submitFeedback">
+                发布反馈
+              </button>
             </div>
 
             <!-- 右侧：我的反馈列表 -->
             <div class="feedback-list-section">
               <h4>我的反馈记录</h4>
               <div class="feedback-list">
-                 <div 
-                   v-for="item in feedbackList" 
-                   :key="item.id" 
-                   class="feedback-item"
-                   :class="{ 'has-reply': item.reply }"
-                   @click="viewReply(item)"
-                 >
-                   <div class="fb-header">
-                     <span class="fb-type-tag">{{ getTypeName(item.type) }}</span>
-                     <span class="fb-time">{{ item.time }}</span>
-                   </div>
-                   <p class="fb-content">{{ item.content }}</p>
-                   <div class="fb-status">
-                     <span v-if="item.reply" class="status-replied">✅ 老师已回复</span>
-                     <span v-else class="status-pending">⏳ 等待回复</span>
-                   </div>
-                 </div>
-                 
-                 <div v-if="feedbackList.length === 0" class="empty-text">
-                   暂无反馈记录
-                 </div>
+                <div
+                  v-for="item in feedbackList"
+                  :key="item.id"
+                  class="feedback-item"
+                  :class="{ 'has-reply': item.reply }"
+                  @click="viewReply(item)"
+                >
+                  <div class="fb-header">
+                    <span class="fb-type-tag">{{
+                      getTypeName(item.type)
+                    }}</span>
+                    <span class="fb-time">{{ item.time }}</span>
+                  </div>
+                  <p class="fb-content">{{ item.content }}</p>
+                  <div class="fb-status">
+                    <span v-if="item.reply" class="status-replied"
+                      >✅ 老师已回复</span
+                    >
+                    <span v-else class="status-pending">⏳ 等待回复</span>
+                  </div>
+                </div>
+
+                <div v-if="feedbackList.length === 0" class="empty-text">
+                  暂无反馈记录
+                </div>
               </div>
             </div>
           </div>
@@ -202,45 +215,60 @@
         <!-- 面板 3: 课程资源 -->
         <div class="resource-panel card-shadow">
           <div class="panel-header">
-             <h3>课程资源</h3>
+            <h3>课程资源</h3>
           </div>
           <div class="panel-body">
-             <div v-if="currentCourseResources.length === 0" class="empty-res-state">
-                <p>📚 老师暂时还没有上传资源哦~</p>
-             </div>
-             <ul class="res-list" v-else>
-                <li v-for="res in currentCourseResources" :key="res.id" class="res-row">
-                   <span class="res-icon">
-                     {{ res.resourceType === 'VIDEO' ? '🎥' : res.resourceType === 'DOCUMENT' ? '�' : '�📄' }}
-                   </span>
-                   <div class="res-info-text">
-                      <span class="res-name">{{ res.resourceName }}</span>
-                      <span class="res-tag">{{ res.resourceType }}</span>
-                   </div>
-                   <button class="download-link" @click="downloadResource(res.id)">
-                      下载
-                   </button>
-                </li>
-             </ul>
+            <div
+              v-if="currentCourseResources.length === 0"
+              class="empty-res-state"
+            >
+              <p>📚 老师暂时还没有上传资源哦~</p>
+            </div>
+            <ul class="res-list" v-else>
+              <li
+                v-for="res in currentCourseResources"
+                :key="res.id"
+                class="res-row"
+              >
+                <span class="res-icon">
+                  {{
+                    res.resourceType === 'VIDEO'
+                      ? '🎥'
+                      : res.resourceType === 'DOCUMENT'
+                        ? '�'
+                        : '�📄'
+                  }}
+                </span>
+                <div class="res-info-text">
+                  <span class="res-name">{{ res.resourceName }}</span>
+                  <span class="res-tag">{{ res.resourceType }}</span>
+                </div>
+                <button class="download-link" @click="downloadResource(res.id)">
+                  下载
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- 弹窗：查看老师回复 (简单实现) -->
-    <div v-if="showReplyModal" class="modal-overlay" @click.self="showReplyModal = false">
-      <div class="modal-content card-shadow" style="width: 400px;">
+    <div
+      v-if="showReplyModal"
+      class="modal-overlay"
+      @click.self="showReplyModal = false"
+    >
+      <div class="modal-content card-shadow" style="width: 400px">
         <div class="modal-header">
           <h3>老师回复</h3>
           <button class="close-btn" @click="showReplyModal = false">×</button>
         </div>
         <div class="modal-body">
-           <p style="white-space: pre-wrap;">{{ currentReply }}</p>
+          <p style="white-space: pre-wrap">{{ currentReply }}</p>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -266,18 +294,18 @@ export default {
       // --- 详情页相关 ---
       currentCourse: null, // 如果不为null，则显示详情页
       currentCourseResources: [],
-      
+
       // 难点反馈相关
       feedbackForm: {
         type: '',
-        content: ''
+        content: '',
       },
       // 模拟反馈列表数据
-      feedbackList: [], 
-      
+      feedbackList: [],
+
       // 回复弹窗
       showReplyModal: false,
-      currentReply: ''
+      currentReply: '',
     };
   },
   created() {
@@ -338,16 +366,17 @@ export default {
         ...course,
         // 模拟额外字段
         score: Math.floor(Math.random() * 20 + 80), // 80-100 随机分
-        description: '本课程旨在深入讲解相关领域的核概念与实践应用，通过理论学习与动手实验相结合的方式，帮助学生掌握关键技能。'
+        description:
+          '本课程旨在深入讲解相关领域的核概念与实践应用，通过理论学习与动手实验相结合的方式，帮助学生掌握关键技能。',
       };
-      
+
       // 获取资源
       this.fetchResources(course.id);
-      
+
       // 模拟获取反馈列表
       this.fetchFeedbackList(course.id);
     },
-    
+
     backToDashboard() {
       this.currentCourse = null;
       this.currentCourseResources = [];
@@ -365,64 +394,64 @@ export default {
         console.error('获取资源失败', error);
       }
     },
-    
+
     // 模拟获取反馈
     fetchFeedbackList(courseId) {
-       // 这里暂时使用Mock数据，实际应调用后端API
-       this.feedbackList = [
-         {
-           id: 1,
-           type: 'concept',
-           time: '2023-12-01',
-           content: '老师，关于第三章的递归逻辑不太理解，能不能再讲一下？',
-           reply: '好的，下节课我会重点复习这部分。',
-           hasReply: true
-         },
-         {
-           id: 2,
-           type: 'homework',
-           time: '2023-12-10',
-           content: '作业第二题的数据集在哪里下载？',
-           reply: null,
-           hasReply: false
-         }
-       ];
+      // 这里暂时使用Mock数据，实际应调用后端API
+      this.feedbackList = [
+        {
+          id: 1,
+          type: 'concept',
+          time: '2023-12-01',
+          content: '老师，关于第三章的递归逻辑不太理解，能不能再讲一下？',
+          reply: '好的，下节课我会重点复习这部分。',
+          hasReply: true,
+        },
+        {
+          id: 2,
+          type: 'homework',
+          time: '2023-12-10',
+          content: '作业第二题的数据集在哪里下载？',
+          reply: null,
+          hasReply: false,
+        },
+      ];
     },
-    
+
     submitFeedback() {
       if (!this.feedbackForm.type || !this.feedbackForm.content) {
         alert('请填写完整的反馈信息');
         return;
       }
-      
+
       // 模拟提交
       const newFeedback = {
         id: Date.now(),
         type: this.feedbackForm.type,
         content: this.feedbackForm.content,
         time: new Date().toISOString().split('T')[0],
-        reply: null
+        reply: null,
       };
-      
+
       this.feedbackList.unshift(newFeedback);
       this.feedbackForm.type = '';
       this.feedbackForm.content = '';
       alert('反馈已提交');
     },
-    
+
     viewReply(item) {
       if (item.reply) {
         this.currentReply = item.reply;
         this.showReplyModal = true;
       }
     },
-    
+
     getTypeName(type) {
       const map = {
         concept: '概念理解',
         homework: '作业难题',
         lab: '实验操作',
-        other: '其他'
+        other: '其他',
       };
       return map[type] || '其他';
     },
@@ -448,7 +477,9 @@ export default {
 .home-container {
   min-height: 100vh;
   background-color: #f0f2f5;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
 }
 
 /* --- 1. 导航栏 --- */
@@ -529,7 +560,9 @@ export default {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 /* --- 2. 顶部区域 --- */
@@ -653,7 +686,7 @@ export default {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  cursor: pointer; 
+  cursor: pointer;
 }
 .course-item:hover {
   transform: translateY(-5px);
@@ -813,10 +846,12 @@ export default {
   display: flex;
   gap: 30px;
 }
-.feedback-form-section, .feedback-list-section {
+.feedback-form-section,
+.feedback-list-section {
   flex: 1;
 }
-.feedback-form-section h4, .feedback-list-section h4 {
+.feedback-form-section h4,
+.feedback-list-section h4 {
   margin: 0 0 15px 0;
   color: #666;
   font-size: 15px;
@@ -830,7 +865,8 @@ export default {
   font-size: 13px;
   color: #606266;
 }
-.custom-select, .custom-textarea {
+.custom-select,
+.custom-textarea {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid #dcdfe6;
