@@ -1,7 +1,9 @@
 package org.example.studyassistant.controller;
 
+import jakarta.transaction.Transactional;
 import org.example.studyassistant.pojo.dto.ResponseMessage;
 import org.example.studyassistant.pojo.entity.Course;
+import org.example.studyassistant.repository.StudentCourseRepository;
 import org.example.studyassistant.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ public class CourseController {
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private StudentCourseRepository studentCourseRepository;
 
     // 1. 学生加入课程
     @PostMapping("/join")
@@ -68,5 +73,16 @@ public class CourseController {
         Integer feedbackId = (Integer) params.get("feedbackId");
         String response = (String) params.get("response");
         return courseService.replyFeedback(feedbackId, response);
+    }
+    // 7. 教师打分接口
+    @PostMapping("/grade")
+    public ResponseMessage<?> gradeStudent(@RequestBody Map<String, Object> params) {
+        Integer courseId = (Integer) params.get("courseId");
+        String studentName = (String) params.get("studentName");
+        // 处理前端传来的可能是 Integer 或 Double 的情况
+        Object scoreObj = params.get("score");
+        Double score = Double.valueOf(scoreObj.toString());
+
+        return courseService.updateStudentScore(courseId, studentName, score);
     }
 }
