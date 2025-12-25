@@ -27,27 +27,17 @@ export const getCourseDetail = (courseId) => {
 
 // 回复反馈
 export const replyFeedback = (params) => {
- return axios.post(config.host + 'course/reply-feedback', params);
+  return axios.post(config.host + 'course/reply-feedback', params);
 };
 
 // 学生提交反馈
 export const submitFeedback = (params) => {
-    return axios.post(config.host + 'course/submit-feedback', params);
+  return axios.post(config.host + 'course/submit-feedback', params);
 };
 
 // 获取我的反馈列表
 export const getMyFeedbacks = (params) => {
-    return axios.post(config.host + 'course/my-feedbacks', params);
-};
-
-// 提交反馈
-export const submitFeedback = (params) => {
-    return axios.post(config.host + 'course/submit-feedback', params);
-};
-
-// 获取我的反馈列表
-export const getMyFeedbacks = (params) => {
-    return axios.post(config.host + 'course/my-feedbacks', params);
+  return axios.post(config.host + 'course/my-feedbacks', params);
 };
 
 // 教师打分
