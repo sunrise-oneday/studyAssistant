@@ -5,7 +5,12 @@
       <div class="nav-content">
         <div class="logo">AI 校园学习助手</div>
         <div class="nav-items">
-          <span class="nav-link" :class="{ active: !currentCourse }" @click="backToDashboard">首页</span>
+          <span
+            class="nav-link"
+            :class="{ active: !currentCourse }"
+            @click="backToDashboard"
+            >首页</span
+          >
           <span class="nav-link" @click="$router.push('/ai')">AI 助手</span>
 
           <div class="user-profile">
@@ -73,7 +78,6 @@
         <!-- 4. 下半部分：课程列表 (Grid布局) -->
         <div class="course-list-section">
           <div class="course-grid">
-            <!-- 循环渲染课程 -->
             <div
               v-for="course in courseList"
               :key="course.id"
@@ -81,7 +85,6 @@
               @click="openCourseDetail(course)"
             >
               <div class="course-cover">
-                <!-- 生成基于课程名的首字母或图标 -->
                 <span>{{
                   course.courseName ? course.courseName.charAt(0) : '课'
                 }}</span>
@@ -91,14 +94,10 @@
                 <p class="code">编号: {{ course.courseCode }}</p>
                 <p class="teacher">讲师: {{ course.teacherName || '未知' }}</p>
 
-                <!-- 修改：查看详情按钮 -->
-                <button class="view-res-btn">
-                  进入课程
-                </button>
+                <button class="view-res-btn">进入课程</button>
               </div>
             </div>
 
-            <!-- 无数据时的占位符 -->
             <div v-if="courseList.length === 0" class="empty-state">
               <p>暂未加入任何课程</p>
             </div>
@@ -108,38 +107,69 @@
 
       <!-- 视图 2: 课程详情面板 (Course Detail) -->
       <div v-else class="course-detail-view">
-        
-        <!-- 面板 1: 课程基本信息 -->
         <div class="detail-panel card-shadow">
-           <button class="back-btn" @click="backToDashboard">
-             ← 返回列表
-           </button>
-           
-           <div class="panel-body flex-row">
-             <div class="course-img-placeholder">
-               <div class="img-box">
-                 <svg class="course-svg" viewBox="0 0 120 90">
-                   <rect x="10" y="12" width="40" height="60" rx="6" fill="#b3d8ff"></rect>
-                   <rect x="50" y="12" width="40" height="60" rx="6" fill="#409eff"></rect>
-                   <line x1="10" y1="36" x2="90" y2="36" stroke="#ffffff" stroke-width="4"></line>
-                   <rect x="25" y="74" width="70" height="8" rx="4" fill="#c0c4cc"></rect>
-                 </svg>
-               </div>
-             </div>
-             <div class="course-info-text">
-               <h2>{{ currentCourse.courseName }}</h2>
-               <div class="info-row">
-                 <span class="label">授课老师:</span> {{ currentCourse.teacherName || '未知' }}
-               </div>
-               <div class="info-row">
-                 <span class="label">当前成绩:</span> <span class="score">{{ currentCourse.score || '暂无' }}</span>
-               </div>
-               <div class="desc-box">
-                 <p class="label">课程描述:</p>
-                 <p class="desc-content">{{ currentCourse.description || '这是一门非常有趣的课程，涵盖了核心知识点...' }}</p>
-               </div>
-             </div>
-           </div>
+          <button class="back-btn" @click="backToDashboard">← 返回列表</button>
+
+          <div class="panel-body flex-row">
+            <div class="course-img-placeholder">
+              <div class="img-box">
+                <svg class="course-svg" viewBox="0 0 120 90">
+                  <rect
+                    x="10"
+                    y="12"
+                    width="40"
+                    height="60"
+                    rx="6"
+                    fill="#b3d8ff"
+                  ></rect>
+                  <rect
+                    x="50"
+                    y="12"
+                    width="40"
+                    height="60"
+                    rx="6"
+                    fill="#409eff"
+                  ></rect>
+                  <line
+                    x1="10"
+                    y1="36"
+                    x2="90"
+                    y2="36"
+                    stroke="#ffffff"
+                    stroke-width="4"
+                  ></line>
+                  <rect
+                    x="25"
+                    y="74"
+                    width="70"
+                    height="8"
+                    rx="4"
+                    fill="#c0c4cc"
+                  ></rect>
+                </svg>
+              </div>
+            </div>
+            <div class="course-info-text">
+              <h2>{{ currentCourse.courseName }}</h2>
+              <div class="info-row">
+                <span class="label">授课老师:</span>
+                {{ currentCourse.teacherName || '未知' }}
+              </div>
+              <div class="info-row">
+                <span class="label">当前成绩:</span>
+                <span class="score">{{ currentCourse.score || '暂无' }}</span>
+              </div>
+              <div class="desc-box">
+                <p class="label">课程描述:</p>
+                <p class="desc-content">
+                  {{
+                    currentCourse.description ||
+                    '这是一门非常有趣的课程，涵盖了核心知识点...'
+                  }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 面板 2: 难点反馈 -->
@@ -148,7 +178,6 @@
             <h3>难点反馈</h3>
           </div>
           <div class="panel-body flex-row split-layout">
-            <!-- 左侧：发布反馈 -->
             <div class="feedback-form-section">
               <h4>发布新反馈</h4>
               <div class="form-group">
@@ -162,41 +191,46 @@
               </div>
               <div class="form-group">
                 <label>描述</label>
-                <textarea 
-                  v-model="feedbackForm.content" 
-                  class="custom-textarea" 
+                <textarea
+                  v-model="feedbackForm.content"
+                  class="custom-textarea"
                   rows="4"
                   placeholder="请详细描述你遇到的困难..."
                 ></textarea>
               </div>
-              <button class="primary-btn" @click="submitFeedback">发布反馈</button>
+              <button class="primary-btn" @click="submitFeedback">
+                发布反馈
+              </button>
             </div>
 
-            <!-- 右侧：我的反馈列表 -->
             <div class="feedback-list-section">
               <h4>我的反馈记录</h4>
               <div class="feedback-list">
-                 <div 
-                   v-for="item in feedbackList" 
-                   :key="item.id" 
-                   class="feedback-item"
-                   :class="{ 'has-reply': item.reply }"
-                   @click="viewReply(item)"
-                 >
-                   <div class="fb-header">
-                     <span class="fb-type-tag">{{ getTypeName(item.type) }}</span>
-                     <span class="fb-time">{{ item.time }}</span>
-                   </div>
-                   <p class="fb-content">{{ item.content }}</p>
-                   <div class="fb-status">
-                     <span v-if="item.reply" class="status-replied">✅ 老师已回复</span>
-                     <span v-else class="status-pending">⏳ 等待回复</span>
-                   </div>
-                 </div>
-                 
-                 <div v-if="feedbackList.length === 0" class="empty-text">
-                   暂无反馈记录
-                 </div>
+                <div
+                  v-for="item in feedbackList"
+                  :key="item.id"
+                  class="feedback-item"
+                  :class="{ 'has-reply': item.reply }"
+                  @click="viewReply(item)"
+                >
+                  <div class="fb-header">
+                    <span class="fb-type-tag">{{
+                      getTypeName(item.type)
+                    }}</span>
+                    <span class="fb-time">{{ item.time }}</span>
+                  </div>
+                  <p class="fb-content">{{ item.content }}</p>
+                  <div class="fb-status">
+                    <span v-if="item.reply" class="status-replied"
+                      >✅ 老师已回复</span
+                    >
+                    <span v-else class="status-pending">⏳ 等待回复</span>
+                  </div>
+                </div>
+
+                <div v-if="feedbackList.length === 0" class="empty-text">
+                  暂无反馈记录
+                </div>
               </div>
             </div>
           </div>
@@ -205,53 +239,71 @@
         <!-- 面板 3: 课程资源 -->
         <div class="resource-panel card-shadow">
           <div class="panel-header">
-             <h3>课程资源</h3>
+            <h3>课程资源</h3>
           </div>
           <div class="panel-body">
-             <div v-if="currentCourseResources.length === 0" class="empty-res-state">
-                <p>📚 老师暂时还没有上传资源哦~</p>
-             </div>
-             <ul class="res-list" v-else>
-                <li v-for="res in currentCourseResources" :key="res.id" class="res-row">
-                   <span class="res-icon">
-                     {{ res.resourceType === 'VIDEO' ? '🎥' : res.resourceType === 'DOCUMENT' ? '�' : '�📄' }}
-                   </span>
-                   <div class="res-info-text">
-                      <span class="res-name">{{ res.resourceName }}</span>
-                      <span class="res-tag">{{ res.resourceType }}</span>
-                   </div>
-                   <button class="download-link" @click="downloadResource(res.id)">
-                      下载
-                   </button>
-                </li>
-             </ul>
+            <div
+              v-if="currentCourseResources.length === 0"
+              class="empty-res-state"
+            >
+              <p>📚 老师暂时还没有上传资源哦~</p>
+            </div>
+            <ul class="res-list" v-else>
+              <li
+                v-for="res in currentCourseResources"
+                :key="res.id"
+                class="res-row"
+              >
+                <span class="res-icon">{{
+                  res.resourceType === 'VIDEO'
+                    ? '🎥'
+                    : res.resourceType === 'DOCUMENT'
+                      ? '📄'
+                      : '📚'
+                }}</span>
+                <div class="res-info-text">
+                  <span class="res-name">{{ res.resourceName }}</span>
+                  <span class="res-tag">{{ res.resourceType }}</span>
+                </div>
+                <button class="download-link" @click="downloadResource(res.id)">
+                  下载
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- 弹窗：查看老师回复 (简单实现) -->
-    <div v-if="showReplyModal" class="modal-overlay" @click.self="showReplyModal = false">
-      <div class="modal-content card-shadow" style="width: 400px;">
+    <div
+      v-if="showReplyModal"
+      class="modal-overlay"
+      @click.self="showReplyModal = false"
+    >
+      <div class="modal-content card-shadow" style="width: 400px">
         <div class="modal-header">
           <h3>老师回复</h3>
           <button class="close-btn" @click="showReplyModal = false">×</button>
         </div>
         <div class="modal-body">
-           <p style="white-space: pre-wrap;">{{ currentReply }}</p>
+          <p style="white-space: pre-wrap">{{ currentReply }}</p>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <script>
 import config from '@/api/config';
 import { logout } from '@/api/sys/auth';
-import { getMyCourses, joinCourse, getCourseDetail, submitFeedback as apiSubmitFeedback, getMyFeedbacks } from '@/api/sys/course';
-// 引入资源相关的API
+import {
+  getMyCourses,
+  joinCourse,
+  getCourseDetail,
+  submitFeedback as apiSubmitFeedback,
+  getMyFeedbacks,
+} from '@/api/sys/course';
 import { getResourceList, getDownloadUrl } from '@/api/sys/resource';
 
 export default {
@@ -265,22 +317,15 @@ export default {
       courseCode: '',
       courseList: [],
       loading: false,
-
-      // --- 详情页相关 ---
-      currentCourse: null, // 如果不为null，则显示详情页
+      currentCourse: null,
       currentCourseResources: [],
-      
-      // 难点反馈相关
       feedbackForm: {
         type: '',
-        content: ''
+        content: '',
       },
-      // 模拟反馈列表数据
-      feedbackList: [], 
-      
-      // 回复弹窗
+      feedbackList: [],
       showReplyModal: false,
-      currentReply: ''
+      currentReply: '',
     };
   },
   created() {
@@ -301,7 +346,6 @@ export default {
     this.fetchCourseList();
   },
   methods: {
-    // 获取课程列表
     async fetchCourseList() {
       try {
         const res = await getMyCourses({ studentName: this.user.name });
@@ -312,8 +356,6 @@ export default {
         console.error('获取课程列表失败', error);
       }
     },
-
-    // 加入课程
     async handleJoinCourse() {
       if (!this.courseCode.trim()) {
         alert('请输入课程编号');
@@ -342,11 +384,6 @@ export default {
         this.loading = false;
       }
     },
-
-    // 进入课程详情
-    // 1. 先获取课程基本信息
-    // 2. 再获取课程资源列表
-    // 3. 最后获取学生的反馈列表
     async openCourseDetail(course) {
       this.currentCourse = { ...course };
       this.fetchResources(course.id);
@@ -361,26 +398,24 @@ export default {
           }
           const list = Array.isArray(detail.feedbacks) ? detail.feedbacks : [];
           this.feedbackList = list
-            .filter(f => f.student && f.student.name === this.user.name)
-            .map(f => ({
+            .filter((f) => f.student && f.student.name === this.user.name)
+            .map((f) => ({
               id: f.id,
               type: f.difficultyType,
               time: '',
               content: f.description,
-              reply: f.teacherResponse || null
+              reply: f.teacherResponse || null,
             }));
         }
       } catch (error) {
         console.error(error);
       }
     },
-    
     backToDashboard() {
       this.currentCourse = null;
       this.currentCourseResources = [];
       this.feedbackList = [];
     },
-
     async fetchResources(courseId) {
       this.currentCourseResources = [];
       try {
@@ -392,25 +427,26 @@ export default {
         console.error('获取资源失败', error);
       }
     },
-    
     async fetchFeedbackList(courseId) {
-       try {
-         const res = await getMyFeedbacks({ courseId, studentName: this.user.name });
-         if (res.data.code === 200) {
-           const list = Array.isArray(res.data.data) ? res.data.data : [];
-           this.feedbackList = list.map(f => ({
-             id: f.id,
-             type: f.difficultyType,
-             time: '',
-             content: f.description,
-             reply: f.teacherResponse || null
-           }));
-         }
-       } catch (e) {
-         console.error('获取我的反馈失败', e);
-       }
+      try {
+        const res = await getMyFeedbacks({
+          courseId,
+          studentName: this.user.name,
+        });
+        if (res.data.code === 200) {
+          const list = Array.isArray(res.data.data) ? res.data.data : [];
+          this.feedbackList = list.map((f) => ({
+            id: f.id,
+            type: f.difficultyType,
+            time: '',
+            content: f.description,
+            reply: f.teacherResponse || null,
+          }));
+        }
+      } catch (e) {
+        console.error('获取我的反馈失败', e);
+      }
     },
-    
     async submitFeedback() {
       if (!this.feedbackForm.type || !this.feedbackForm.content) {
         alert('请填写完整的反馈信息');
@@ -421,7 +457,7 @@ export default {
           courseId: this.currentCourse.id,
           studentName: this.user.name,
           difficultyType: this.feedbackForm.type,
-          description: this.feedbackForm.content
+          description: this.feedbackForm.content,
         };
         const res = await apiSubmitFeedback(params);
         if (res.data.code === 200) {
@@ -437,33 +473,27 @@ export default {
         alert('系统错误或网络异常');
       }
     },
-    
     viewReply(item) {
       if (item.reply) {
         this.currentReply = item.reply;
         this.showReplyModal = true;
       }
     },
-    
     getTypeName(type) {
       const map = {
+        CONCEPT: '概念模糊',
+        CALCULATION: '计算困难',
+        METHOD: '方法不当',
         concept: '概念理解',
         homework: '作业难题',
         lab: '实验操作',
         other: '其他',
-        CONCEPT: '概念模糊',
-        CALCULATION: '计算困难',
-        METHOD: '方法不当'
       };
       return map[type] || '其他';
     },
-
-    // 下载资源
     downloadResource(id) {
       window.open(getDownloadUrl(id));
     },
-
-    // 退出登录
     handleLogout() {
       if (confirm('确定要退出登录吗？')) {
         logout();
@@ -479,7 +509,9 @@ export default {
 .home-container {
   min-height: 100vh;
   background-color: #f0f2f5;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
 }
 
 /* --- 1. 导航栏 --- */
@@ -560,7 +592,9 @@ export default {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 /* --- 2. 顶部区域 --- */
@@ -684,7 +718,7 @@ export default {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  cursor: pointer; 
+  cursor: pointer;
 }
 .course-item:hover {
   transform: translateY(-5px);
@@ -848,10 +882,12 @@ export default {
   display: flex;
   gap: 30px;
 }
-.feedback-form-section, .feedback-list-section {
+.feedback-form-section,
+.feedback-list-section {
   flex: 1;
 }
-.feedback-form-section h4, .feedback-list-section h4 {
+.feedback-form-section h4,
+.feedback-list-section h4 {
   margin: 0 0 15px 0;
   color: #666;
   font-size: 15px;
@@ -865,7 +901,8 @@ export default {
   font-size: 13px;
   color: #606266;
 }
-.custom-select, .custom-textarea {
+.custom-select,
+.custom-textarea {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid #dcdfe6;
@@ -923,6 +960,13 @@ export default {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  /* 添加标准属性以提高兼容性 */
+  display: -moz-box;
+  display: box;
+  line-clamp: 2;
+  -moz-line-clamp: 2;
+  box-orient: vertical;
+  -moz-box-orient: vertical;
 }
 .fb-status {
   font-size: 12px;

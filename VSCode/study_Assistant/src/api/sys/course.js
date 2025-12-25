@@ -31,6 +31,12 @@ export const replyFeedback = (params) => {
 };
 
 // 学生提交反馈
+@@ -39,18 +39,3 @@ export const submitFeedback = (params) => {
+export const getMyFeedbacks = (params) => {
+    return axios.post(config.host + 'course/my-feedbacks', params);
+};
+
+// 提交反馈
 export const submitFeedback = (params) => {
     return axios.post(config.host + 'course/submit-feedback', params);
 };
@@ -38,4 +44,9 @@ export const submitFeedback = (params) => {
 // 获取我的反馈列表
 export const getMyFeedbacks = (params) => {
     return axios.post(config.host + 'course/my-feedbacks', params);
+};
+
+// 教师打分
+export const gradeStudent = (params) => {
+  return axios.post(config.host + 'course/grade', params);
 };
